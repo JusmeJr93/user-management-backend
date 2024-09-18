@@ -2,7 +2,9 @@
 
 ## Overview
 
-This project provides a backend service for the **User Management App**. It features user registration, login, and management functionalities including blocking/unblocking users, and updating user information. The service uses Express for the server, MySQL for the database, and JWT for authentication
+This project provides a backend service for **AuthMaster**, a full-stack user management system. It features user registration, login, and management functionalities including blocking/unblocking users, and updating user information. The service uses Express for the server, MySQL for the database, and JWT for authentication.
+
+You can check the Frontend part [here](hhttps://github.com/JusmeJr93/user-management-app).
 
 ## Features
 
