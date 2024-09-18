@@ -14,7 +14,7 @@ app.use(express.json());
 
 // CORS middleware
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://user-management-app-snowy.vercel.app'],
+    origin: ['http://localhost:5173', 'https://authmaster-user-management.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true
 }));
