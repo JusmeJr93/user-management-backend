@@ -7,7 +7,7 @@ export const verifyToken = (req, res, next) => {
         return res.status(401).json({ error: 'Access denied. No token provided.' });
     }
 
-    const token = authHeader.split(' ')[1]; // Extract token after "Bearer"
+    const token = authHeader.split(' ')[1]; // extracting token after "Bearer"
 
     if (!token) {
         return res.status(401).json({ error: 'Token format is incorrect.' });

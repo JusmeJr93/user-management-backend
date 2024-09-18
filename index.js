@@ -14,14 +14,12 @@ app.use(express.json());
 
 // CORS middleware
 app.use(cors({
-    origin: '*',
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true
 }));
 
-const PORT = process.env.PORT || 5000;
-
-
+app.options('*', cors());
 
 app.post('/api/register', register);
 app.post('/api/login', login);
@@ -111,7 +109,7 @@ app.put('/api/users/:id', verifyToken, async (req, res) => {
     }
 });
 
-
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
