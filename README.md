@@ -1,27 +1,43 @@
-# User Management Backend
+# AuthMaster Backend
 
 ## Overview
 
-This project provides a backend service for **AuthMaster**, a full-stack user management system. It features user registration, login, and management functionalities including blocking/unblocking users, and updating user information. The service uses Express for the server, MySQL for the database, and JWT for authentication.
+This repository contains the backend service for **AuthMaster**, a full-stack user management system. It facilitates user registration, login, and comprehensive user management, such as blocking/unblocking, profile updates, and secure authentication. The backend is built using Node.js, powered by Express, with MySQL as the database, and secure user authentication through JWT (JSON Web Tokens).
 
-You can check the Frontend part [here](https://github.com/JusmeJr93/user-management-app).
+For the frontend, Go to the [AuthMaster Frontend Repository](https://github.com/JusmeJr93/user-management-app).
 
-## Features
+## Key Features
 
-- **User Registration**: Register new users with email, password, and name.
-- **User Login**: Authenticate users and generate JWT tokens.
+- **User Registration**:
+  - Register new users with email, password, and name.
+  - Passwords are securely hashed in the database using **bcrypt**.
+- **User Login**:
+  - Users can authenticate using their email and password.
+  - Successful login returns a JWT token for session management.
 - **User Management**:
-  - Get a list of all users (protected route).
-  - Block/Unblock users (protected route).
-  - Delete users (protected route).
-  - Edit user details (protected route).
+  - Get a list of all users.
+  - Block/Unblock users (admin-only).
+  - Delete users (admin-only).
+  - Authenticated users can update their profile and admin can update all.
+
+## Project Architecture
+
+1. **Authentication:** JWT-based authentication ensures secure access to protected routes.
+2. **Role-based Access Control:** Admins have special privileges such as blocking/unblocking and delete users.
+3. **Database:** MySQL serves as the relational database to store user data securely.
+4. **Data Validation:** Input validation is implemented to ensure that the submitted data is formatted correctly.
 
 ## Tech Stack
 
-- **Node.js**: JavaScript runtime for server-side scripting.
-- **Express**: Web framework for building the server.
+- **Node.js**: Used for server-side scripting.
+- **Express.js**: Web framework for routing and handling HTTP requests.
 - **MySQL2**: Database client for connecting to MySQL databases.
-- **bcryptjs**: Library for hashing passwords.
-- **jsonwebtoken**: Library for generating and verifying JWT tokens.
-- **dotenv**: Library for managing environment variables.
-- **cors**: Middleware for handling Cross-Origin Resource Sharing.
+- **bcryptjs**: Library used to hash passwords and store credentials securely.
+- **jsonwebtoken (JWT)**: For token-based authentication to secure API routes.
+- **express-validator:** Middleware used to validate request credentials.
+- **dotenv**: Library used to manage environment variables.
+- **cors**: Used to enable cross-origin requests from the frontend.
+
+## Deployment
+
+The backend and database are deployed on Heroku.

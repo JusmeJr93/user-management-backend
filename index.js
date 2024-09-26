@@ -3,9 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { pool } from './db.js';
 import { register, login } from './authController.js';
-import { verifyToken } from './authMiddleware.js';
-
-
+import { verifyAdmin, verifyToken } from './authMiddleware.js';
 
 dotenv.config();
 
@@ -27,9 +25,8 @@ app.post('/api/login', login);
 //protected route to get all users
 app.get('/api/users', verifyToken, async (req, res) => {
     try {
-        const [users] = await pool.query(`
-            SELECT id, name, email, last_login, registration_time, status
-            FROM users`
+        const [users] = await pool.query(
+            'SELECT id, name, email, last_login, registration_time, role, status, profile_picture FROM users'
         );
 
         res.json(users);
@@ -38,8 +35,28 @@ app.get('/api/users', verifyToken, async (req, res) => {
     }
 });
 
+//protected route to get profile
+app.get('/api/users/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [user] = await pool.query(
+            'SELECT id, name, email, job_title, department, hire_date, phone_number, gender, profile_picture FROM users WHERE id = ?',
+            [id]
+        );
+
+        if (user.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(user[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 //protected route to block and unblock
-app.patch('/api/users/:id/status', verifyToken, async (req, res) => {
+app.patch('/api/users/:id/status', verifyToken, verifyAdmin, async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
@@ -61,13 +78,13 @@ app.patch('/api/users/:id/status', verifyToken, async (req, res) => {
 });
 
 //protected route to delete user
-app.delete('/api/users/:id', verifyToken, async (req, res) => {
+app.delete('/api/users/:id', verifyToken, verifyAdmin, async (req, res) => {
     const { id } = req.params;
 
     try {
-        await pool.query(`
-            DELETE FROM users
-            WHERE id=?`, [id]
+        await pool.query(
+            'DELETE FROM users WHERE id = ?',
+            [id]
         );
 
         res.json({ message: 'User deleted successfully' });
@@ -76,17 +93,17 @@ app.delete('/api/users/:id', verifyToken, async (req, res) => {
     }
 });
 
-//protected route to edit user info
+//protected route to edit user profile
 app.put('/api/users/:id', verifyToken, async (req, res) => {
 
     const { id } = req.params;
-    const { name, email, status } = req.body;
+    const { name, email, job_title, department, hire_date, phone_number, gender, profile_picture } = req.body;
 
-    if (!name || !email || (status !== 'active' && status !== 'blocked')) {
-        return res.status(400).json({ error: 'Please provide valid name, email, and status.' });
+    if (!name || !email) {
+        return res.status(400).json({ error: 'Please provide valid name and email.' });
     }
 
-    try {//checking if another user with the same email already exists(excluding the current user)
+    try {
         const [existingUser] = await pool.query(`
             SELECT * FROM users
             WHERE email = ? AND id != ?`, [email, id]
@@ -96,11 +113,16 @@ app.put('/api/users/:id', verifyToken, async (req, res) => {
             return res.status(400).json({ error: 'Email is already in use by another user.' });
         }
 
+        let formattedHireDate = null;
+        if (hire_date) {
+            formattedHireDate = hire_date.split('T')[0]; // YYYY-MM-DD format
+        }
+
         //updating user info
         await pool.query(`
             UPDATE users 
-            SET name = ?, email = ?,status = ?
-            WHERE id = ?`, [name, email, status, id]
+            SET name = ?, email = ?,  job_title = ?, department = ?, hire_date = ?, phone_number = ?, gender = ?, profile_picture = ?
+            WHERE id = ?`, [name, email, job_title, department, formattedHireDate, phone_number, gender, profile_picture, id]
         );
 
         res.json({ message: 'User updated successfully.' });
